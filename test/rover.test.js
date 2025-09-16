@@ -16,6 +16,12 @@ describe('Unit tests for Part II', () => {
         expect(roverReport(result)).toBe("(0, 0) WEST");
     });
 
+    test('rover can move to negative coordinates', () => {
+        const rover = setupRover(0, 0, "SOUTH");
+        const result = translateCommands(rover, "F");
+        expect(roverReport(result)).toBe("(0, -1) SOUTH");
+    });
+
     test('should stop before an obstacle and report STOPPED', () => {
         const rover = setupRover(0, 0, "EAST");
         const obstacles = [[2, 0]];
