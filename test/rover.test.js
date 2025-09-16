@@ -1,8 +1,8 @@
-const { translateCommands, roverReport } = require('../src/rover.js');
+const { translateCommands, roverReport, setupRover } = require('../src/rover.js');
 
 describe('Unit tests for Part II', () => {
     test('translate command FLFFFRFLB without obstacles', () => {
-        const rover = { x: 4, y: 2, direction: "EAST" };
+        const rover = setupRover(4, 2, "EAST");
         const result = translateCommands(rover, "FLFFFRFLB");
 
         expect(result.stopped).toBe(false);
@@ -10,7 +10,7 @@ describe('Unit tests for Part II', () => {
     });
 
     test('command with rotate left', () => {
-        const rover = { x: 0, y: 0, direction: "NORTH" };
+        const rover = setupRover(0, 0, "NORTH");
         const obstacles = [[1, 4], [3, 5], [7, 4]];
         const result = translateCommands(rover, "L", obstacles);
 
@@ -19,7 +19,7 @@ describe('Unit tests for Part II', () => {
     });
 
     test('should stop before an obstacle and report STOPPED', () => {
-        const rover = { x: 0, y: 0, direction: "EAST" };
+        const rover = setupRover(0, 0, "EAST");
         const obstacles = [[2, 0]];
 
         const result = translateCommands(rover, "FFR", obstacles);
@@ -30,7 +30,11 @@ describe('Unit tests for Part II', () => {
     });
 
     test('invalid command should throw error', () => {
-        const rover = { x: 0, y: 0, direction: "NORTH" };
+        const rover = setupRover(0, 0, "NORTH");
         expect(() => translateCommands(rover, "BRZ")).toThrow("Invalid command");
+    });
+
+    test('invalid direction should throws error', () => {
+        expect(() => setupRover(0, 0, 'UP')).toThrow('Invalid direction: UP');
     });
 });

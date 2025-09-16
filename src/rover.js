@@ -7,6 +7,13 @@ const movesByDirection = {
     WEST: { dx: -1, dy: 0 }     // x - 1
 };
 
+function setupRover(x, y, direction) {
+    if (!directions.includes(direction)) {
+        throw new Error(`Invalid direction: ${direction}`);
+    }
+    return { x, y, direction };
+}
+
 /**
  * Rotate right or left by 90 degrees
  * @param {Object} rover: { x, y, direction } 
@@ -80,5 +87,4 @@ function roverReport(roverResult) {
     return stopped ? `${base} STOPPED` : base;
 }
 
-
-module.exports = { translateCommands, roverReport };
+module.exports = { translateCommands, roverReport, setupRover };
