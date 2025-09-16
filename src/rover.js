@@ -7,14 +7,6 @@ const movesByDirection = {
     WEST: { dx: -1, dy: 0 }     // x - 1
 };
 
-const commandActions = {
-    F: (rover) => move(rover, "forward"),
-    B: (rover) => move(rover, "backwards"),
-    L: (rover) => rotate(rover, "left"),
-    R: (rover) => rotate(rover, "right")
-};
-
-
 /**
  * Rotate right or left by 90 degrees
  * @param {Object} rover: { x, y, direction } 
@@ -36,15 +28,23 @@ function rotate(rover, rotationDir) {
  * @param {Object} rover: { x, y, direction }
  * @param {string} moveStep: forward or backwards
  */
-function move(rover, moveDir) {
+function move(rover, moveDir, obstaclesSet) {
     if (!["forward", "backwards"].includes(moveDir)) {
         throw new Error(`Invalid move direction: ${moveDir}`);
     }
 
     const moveStep = moveDir === "forward" ? 1 : -1;
     const { dx, dy } = movesByDirection[rover.direction];
-    rover.x += dx * moveStep;
-    rover.y += dy * moveStep;
+
+    const nextX = rover.x + dx * moveStep;
+    const nextY = rover.y + dy * moveStep;
+
+    if (obstaclesSet.has(`${nextX},${nextY}`)) {
+        return { blocked: true };
+    }
+    rover.x = nextX;
+    rover.y = nextY;
+    return { blocked: false };
 }
 
 /**
@@ -53,17 +53,31 @@ function move(rover, moveDir) {
  * @param {string} commands 
  * @returns new rover: { x, y, direction }
  */
-function translateCommands(rover, commands) {
+function translateCommands(rover, commands, obstaclesArray = []) {
+    const obstaclesSet = new Set(obstaclesArray.map(([x, y]) => `${x},${y}`));
+
+    const commandActions = {
+        F: (rover) => move(rover, "forward", obstaclesSet),
+        B: (rover) => move(rover, "backwards", obstaclesSet),
+        L: (rover) => { rotate(rover, "left"); return { blocked: false }; },
+        R: (rover) => { rotate(rover, "right"); return { blocked: false }; }
+    };
+
     for (const command of commands) {
         const action = commandActions[command];
         if (!action) throw new Error(`Invalid command: "${command}"`);
-        action(rover);
+        const result = action(rover);
+        if (result && result.blocked) {
+            return { rover: { ...rover }, stopped: true };
+        }
     }
-    return rover;
+    return { rover: { ...rover }, stopped: false };
 }
 
-function roverReport(rover) {
-    return `(${rover.x}, ${rover.y}) ${rover.direction}`;
+function roverReport(roverResult) {
+    const { rover, stopped } = roverResult;
+    const base = `(${rover.x}, ${rover.y}) ${rover.direction}`;
+    return stopped ? `${base} STOPPED` : base;
 }
 
 

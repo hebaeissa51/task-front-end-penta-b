@@ -1,6 +1,7 @@
 const { translateCommands, roverReport } = require('./src/rover.js');
 
-const rover = { x: 4, y: 2, direction: "EAST" };
-const currentRover = translateCommands(rover, "FLFFFRFLB");
+const rover = { x: 0, y: 0, direction: "EAST" };
+const obstacles = [[2, 0]];
+const result = translateCommands(rover, "FFR", obstacles);
 
-console.log("Rover reports: ", roverReport(currentRover));
+console.log("Rover reports: ", roverReport(result));
