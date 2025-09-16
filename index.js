@@ -1,4 +1,4 @@
-import { rotate, move } from "./src/rover.js";
+const { rotate, move } = require('./src/rover.js');
 
 const rover = { x: 0, y: 0, direction: "EAST" };
 

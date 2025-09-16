@@ -12,7 +12,7 @@ const movesByDirection = {
  * @param {Object} rover: { x, y, direction } 
  * @param {string} rotation: right or left
  */
-export function rotate(rover, rotationDir) {
+function rotate(rover, rotationDir) {
     if (!["left", "right"].includes(rotationDir)) {
         throw new Error(`Invalid rotation direction: ${rotationDir}`);
     }
@@ -28,7 +28,7 @@ export function rotate(rover, rotationDir) {
  * @param {Object} rover: { x, y, direction }
  * @param {string} moveStep: forward or backwards
  */
-export function move(rover, moveDir) {
+function move(rover, moveDir) {
     if (!["forward", "backwards"].includes(moveDir)) {
         throw new Error(`Invalid move direction: ${moveDir}`);
     }
@@ -38,3 +38,5 @@ export function move(rover, moveDir) {
     rover.x += dx * moveStep;
     rover.y += dy * moveStep;
 }
+
+module.exports = { rotate, move };
