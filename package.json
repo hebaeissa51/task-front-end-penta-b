@@ -2,7 +2,9 @@
   "name": "task-front-end-penta-b",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
+    "start": "node index.js",
     "test": "jest"
   },
   "keywords": [],
