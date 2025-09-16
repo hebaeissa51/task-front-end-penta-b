@@ -81,4 +81,4 @@ function roverReport(roverResult) {
 }
 
 
-module.exports = { rotate, move, translateCommands, roverReport };
+module.exports = { translateCommands, roverReport };
