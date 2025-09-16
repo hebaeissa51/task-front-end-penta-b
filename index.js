@@ -1,8 +1,6 @@
-const { rotate, move } = require('./src/rover.js');
+const { translateCommands, roverReport } = require('./src/rover.js');
 
-const rover = { x: 0, y: 0, direction: "EAST" };
+const rover = { x: 4, y: 2, direction: "EAST" };
+const currentRover = translateCommands(rover, "FLFFFRFLB");
 
-rotate(rover, "left"); 
-move(rover, "backwards");    
-
-console.log("Rover:", rover);
+console.log("Rover reports: ", roverReport(currentRover));
