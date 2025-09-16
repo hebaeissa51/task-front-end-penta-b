@@ -5,7 +5,6 @@ describe('Unit tests for Part II', () => {
         const rover = setupRover(4, 2, "EAST");
         const result = translateCommands(rover, "FLFFFRFLB");
 
-        expect(result.stopped).toBe(false);
         expect(roverReport(result)).toBe("(6, 4) NORTH");
     });
 
@@ -14,24 +13,21 @@ describe('Unit tests for Part II', () => {
         const obstacles = [[1, 4], [3, 5], [7, 4]];
         const result = translateCommands(rover, "L", obstacles);
 
-        expect(result.stopped).toBe(false);
         expect(roverReport(result)).toBe("(0, 0) WEST");
     });
 
     test('should stop before an obstacle and report STOPPED', () => {
         const rover = setupRover(0, 0, "EAST");
         const obstacles = [[2, 0]];
-
         const result = translateCommands(rover, "FFR", obstacles);
 
-        expect(result.stopped).toBe(true);
         expect(result.rover).toEqual({ x: 1, y: 0, direction: "EAST" });
         expect(roverReport(result)).toBe("(1, 0) EAST STOPPED");
     });
 
     test('invalid command should throw error', () => {
         const rover = setupRover(0, 0, "NORTH");
-        expect(() => translateCommands(rover, "BRZ")).toThrow("Invalid command");
+        expect(() => translateCommands(rover, "BRZ")).toThrow("Invalid command: Z");
     });
 
     test('invalid direction should throws error', () => {

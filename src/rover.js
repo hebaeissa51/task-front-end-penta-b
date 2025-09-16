@@ -1,90 +1,81 @@
-const directions = ["NORTH", "EAST", "SOUTH", "WEST"];
+/********************** Constants *********************/
+const DIRECTIONS = ["NORTH", "EAST", "SOUTH", "WEST"];
 
-const movesByDirection = {
-    NORTH: { dx: 0, dy: 1 },     // y + 1
-    EAST: { dx: 1, dy: 0 },     // x + 1
-    SOUTH: { dx: 0, dy: -1 },   // y - 1
-    WEST: { dx: -1, dy: 0 }     // x - 1
+const MOVES = {
+    NORTH: { dx: 0, dy: 1 },   // y + 1
+    EAST:  { dx: 1, dy: 0 },   // x + 1
+    SOUTH: { dx: 0, dy: -1 },  // y - 1
+    WEST:  { dx: -1, dy: 0 }   // x - 1
 };
 
+const ROTATION_STEPS = { right: 1, left: -1 };
+
+const MOVE_STEPS = { forward: 1, backwards: -1 };
+
+/********************** Rover setup *********************/
 function setupRover(x, y, direction) {
-    if (!directions.includes(direction)) {
+    if (!DIRECTIONS.includes(direction)) {
         throw new Error(`Invalid direction: ${direction}`);
     }
     return { x, y, direction };
 }
 
-/**
- * Rotate right or left by 90 degrees
- * @param {Object} rover: { x, y, direction } 
- * @param {string} rotation: right or left
- */
+/********************** Rotate *********************/
 function rotate(rover, rotationDir) {
-    if (!["left", "right"].includes(rotationDir)) {
-        throw new Error(`Invalid rotation direction: ${rotationDir}`);
-    }
+    const step = ROTATION_STEPS[rotationDir];
+    if (!step) throw new Error(`Invalid rotation direction: ${rotationDir}`);
 
-    const directionStep = rotationDir === "right" ? 1 : -1;
-    const currentIndex = directions.indexOf(rover.direction);
-    const nextIndex = (currentIndex + directionStep + directions.length) % directions.length;
-    rover.direction = directions[nextIndex];
+    const currentIndex = DIRECTIONS.indexOf(rover.direction);
+    const nextIndex = (currentIndex + step + DIRECTIONS.length) % DIRECTIONS.length;
+    rover.direction = DIRECTIONS[nextIndex];
 }
 
-/**
- *  Move forward or backwards on current heading
- * @param {Object} rover: { x, y, direction }
- * @param {string} moveStep: forward or backwards
- */
+/********************** Move *********************/
 function move(rover, moveDir, obstaclesSet) {
-    if (!["forward", "backwards"].includes(moveDir)) {
-        throw new Error(`Invalid move direction: ${moveDir}`);
-    }
+    const step = MOVE_STEPS[moveDir];
+    if (step === undefined) throw new Error(`Invalid move direction: ${moveDir}`);
 
-    const moveStep = moveDir === "forward" ? 1 : -1;
-    const { dx, dy } = movesByDirection[rover.direction];
-
-    const nextX = rover.x + dx * moveStep;
-    const nextY = rover.y + dy * moveStep;
+    const { dx, dy } = MOVES[rover.direction];
+    const nextX = rover.x + dx * step;
+    const nextY = rover.y + dy * step;
 
     if (obstaclesSet.has(`${nextX},${nextY}`)) {
-        return { blocked: true };
+        return false; 
     }
     rover.x = nextX;
     rover.y = nextY;
-    return { blocked: false };
+    return true; 
 }
 
-/**
- * 
- * @param {Object} rover: { x, y, direction }
- * @param {string} commands 
- * @returns new rover: { x, y, direction }
- */
+/********************** Translate Commands *********************/
 function translateCommands(rover, commands, obstaclesArray = []) {
     const obstaclesSet = new Set(obstaclesArray.map(([x, y]) => `${x},${y}`));
 
     const commandActions = {
         F: (rover) => move(rover, "forward", obstaclesSet),
         B: (rover) => move(rover, "backwards", obstaclesSet),
-        L: (rover) => { rotate(rover, "left"); return { blocked: false }; },
-        R: (rover) => { rotate(rover, "right"); return { blocked: false }; }
+        L: (rover) => { rotate(rover, "left"); return true; },
+        R: (rover) => { rotate(rover, "right"); return true; }
     };
 
     for (const command of commands) {
         const action = commandActions[command];
-        if (!action) throw new Error(`Invalid command: "${command}"`);
-        const result = action(rover);
-        if (result && result.blocked) {
+        if (!action) throw new Error(`Invalid command: ${command}`);
+        
+        const moved = action(rover);
+        if (!moved) {
             return { rover: { ...rover }, stopped: true };
         }
     }
     return { rover: { ...rover }, stopped: false };
 }
 
+/********************** Rover report *********************/
 function roverReport(roverResult) {
     const { rover, stopped } = roverResult;
     const base = `(${rover.x}, ${rover.y}) ${rover.direction}`;
     return stopped ? `${base} STOPPED` : base;
 }
 
+/********************** Exports *********************/
 module.exports = { translateCommands, roverReport, setupRover };
